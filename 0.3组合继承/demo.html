@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+//  组合式继承
+//  声明父类
+    function SuperClass(name) {
+    //  值类型共有属性
+      this.name = name;
+    //  引用类型共有属性
+      this.books = ['a','b','c'];
+    }
+
+//    父类原型共有方法
+    SuperClass.prototype.getName = function (){
+      console.log(this.name);
+    }
+
+//    声明子类,这里是构造函数式，用来获取构造函数
+    function SubClass(name,time){
+    //  构造函数式继承父类name属性
+      SuperClass.call(this,name);
+    //  子类中新增共有属性
+      this.time = time;
+    }
+
+//    类式继承，子类原型继承父类，用来获取父类的prototype
+    SubClass.prototype = new SuperClass();
+
+//    子类原型方法
+    SubClass.prototype.getTime = function (){
+      console.log(this.time)
+    }
+
+
+//    测试代码
+    let instance1 = new SubClass('js book',2014);
+    instance1.books.push('test');
+    console.log(instance1.books);
+    instance1.getName();
+    instance1.getTime();
+
+    let instance2 = new SubClass('js book2',2016);
+    instance2.books.push('test2');
+    console.log(instance2.books);
+    instance2.getName();
+    instance2.getTime();
+//    结果可以看出，两个实例之间是相互独立的，并且也拿到了父类的prototype，
+//    同样，在子类的构造函数中也实现了对父类的重新构造
+</script>
+</body>
+</html>

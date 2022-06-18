@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<!--    类式继承-->
+<script>
+    function SuperClass(){
+      this.superValue = true
+      this.books = ['a','b']
+    }
+//    为父类添加共用方法
+    SuperClass.prototype.getSuperValue = function (){
+      return this.superValue;
+    }
+//    声明子类
+    function SubClass(){
+      this.subValue = false
+    }
+//    继承父类
+//    这里是直接把父类的一个实例当做了子类的prototype
+    SubClass.prototype = new SuperClass();
+    SubClass.prototype.getSubValue = function (){
+      return this.subValue;
+    }
+
+//类式继承是有两个严重的问题的
+//一：因为类式继承是通过prototype继承父类，导致子类的修改会影响到父类
+//二：在继承父类时，由于使用了SubClass.prototype = new SuperClass();所以是无法对父类进行初始化的，也无法对父类传参
+
+//问题一的测试
+    let superA = new SuperClass()
+    console.log(superA.books)
+    let subA = new SubClass()
+    console.log(subA.books)
+    let subB = new SubClass()
+    console.log(subB.books)
+    //    输出正常，都只有a,b
+    //如果A向里添加了数据，这是B也会收到影响，因为A和B的prototype指向的是一块内存
+    subA.books.push('c')
+    console.log(subA.books)
+    console.log(subB.books)
+
+</script>
+</body>
+</html>

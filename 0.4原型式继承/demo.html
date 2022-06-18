@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+<!--  原型式继承-->
+    function inheritObject(o){
+    //声明一个过渡函数对象
+      function F(){}
+    //过渡对象的原型继承父对象
+      F.prototype = o;
+    //返回过渡对象的一个实例，该对象的原型继承了父对象
+      return new F();
+    }
+    //测试代码
+    let book = {
+        name: 'js book',
+        alikeBook: [
+          'css book',
+          'html book'
+        ]
+    }
+    let newBook = inheritObject(book)
+    newBook.name = 'ajax book'
+    newBook.alikeBook.push('xml book')
+
+    let otherBook = inheritObject(book)
+    otherBook.name = 'flash book'
+    otherBook.alikeBook.push('as book')
+
+    console.log(newBook.name)
+    console.log(newBook.alikeBook)
+    console.log(otherBook.name)
+    console.log(otherBook.alikeBook)
+    console.log(book.name)
+    console.log(book.alikeBook)
+
+//首先，这个是与类式继承相似，都是通过prototype进行继承，
+//仍然存在类式继承的问题
+//改善
+// 1：不再通过子类的prototype进行继承，而是通过一个中间对象，
+// 让他去继承父类，如何返回一个new F()
+//function F(){}
+// F.prototype = o;
+// return new F();
+// let newBook = inheritObject(book)
+//              ===
+// SubClass.prototype = new SuperClass();
+// let superA = new SuperClass()
+//就是类式继承是让子类的prototype等于父类的一个实例
+//使用时就将子类new实例化如何赋值给实例对象
+//而在原型式继承中，不需要去改变子类的prototype，
+//只要去改变一个过渡对象的prototype，让他的prototype等于父类的实例，
+//然后让过渡对象实例化，把这个对象返回给真正的对象
+//这个流程有点像一个工厂，这个工厂的目的就是创造子类的对象
+</script>
+</body>
+</html>

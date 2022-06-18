@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+//简单工厂模式，又叫静态工厂方法，由一个工厂对象决定创建某一种产品对象类的实例，主要用来生成同一类对象
+
+    <!--  这是一个创建运动类的工厂-->
+      function createSport(name){
+        let o = new Object();
+        o.intro = name;
+        switch (name) {
+        case '篮球':
+          o.getMember = function (){
+            console.log('篮球要五个人');
+          }
+          o.getBallSize = function () {
+            console.log('篮球很大');
+          }
+          break
+        case '足球':
+            o.getMember = function (){
+              console.log('足球要11个人');
+            }
+            o.getBallSize = function () {
+              console.log('足球一般大');
+            }
+            break;
+        case '乒乓球':
+            o.getMember = function (){
+              console.log('乒乓球要2个人');
+            }
+            o.getBallSize = function () {
+              console.log('乒乓球很小');
+            }
+            break;
+        }
+        return o;
+      }
+    //提供了简单的数据
+    let sportList = ['乒乓球','足球','篮球'];
+    //对数据进行对象的创建
+    for (let i = 0; i < sportList.length; i++) {
+        let o = createSport(sportList[i]);
+        o.getBallSize();
+        o.getMember();
+    }
+</script>
+</body>
+</html>

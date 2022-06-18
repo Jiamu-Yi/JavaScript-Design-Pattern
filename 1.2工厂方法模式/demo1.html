@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+<!--  工厂方式模式：通过对产品类的抽象使其创建业务主要负责用于创建类产品的实例-->
+//      这里相当于是把类的定义和类的调用分离了，在定义中，可以对多个类进行定义。而在调用中，
+//      由于调用单独剥离了出来，导致可以对整个的工厂进行安全检验，防止使用者出现误用new的情况，
+
+//    安全模式
+    let  Factory = function (type,content) {
+      if(this instanceof Factory){
+        return new this[type](content);
+      }else {
+        return new Factory(type,content)
+      }
+    }
+
+//    工厂原型中设置创建所有类型数据对象的基类
+    Factory.prototype = {
+      Java: function (content){
+       console.log('Java',content)
+      },
+      Python: function (content){
+        console.log('Python',content)
+      },
+      JS: function (content){
+        console.log('JS',content)
+      }
+    }
+
+    let data = [
+      {type:'Java',content:'java是世界上最好的语言'},
+      {type:'Python',content:'Python是世界上最好的语言'},
+      {type:'JS',content:'JS是世界上最好的语言'}
+    ]
+
+    for (let i = 0; i < data.length ; i++) {
+        //使用new
+        let x = new Factory(data[i].type,data[i].content);
+        //不使用new，这得益于安全模式
+        Factory(data[i].type,data[i].content);
+    }
+</script>
+</body>
+</html>
