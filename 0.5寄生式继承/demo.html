@@ -6,7 +6,26 @@
 </head>
 <body>
 <script>
-
+//寄生式继承
+//
+//  顾名思义，寄生继承就是基于原型继承，
+//  在使用过渡对象继承返回一个新的实例对象之后
+//  可以对这个对象进行增强添加新的属性和方法
+//
+//声明基对象
+let book = {
+  name: 'js book',
+  alikeBook:['css book','html book']
+};
+function createBook(obj){
+  //通过原型继承方式创建新对象
+  let o = new inheritObject(obj);
+  //拓展新对象
+  o.getName = function (){
+    console.log(name)
+  }
+  return o;
+}
 </script>
 </body>
 </html>
