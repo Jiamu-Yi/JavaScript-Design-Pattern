@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+    //  桥接模式：在系统沿着多个维度变化的同时，又不增加其复杂度并已达到解耦
+    //其实就是将实现层（如元素绑定的事件）和抽象层（如修饰页面UI逻辑）解耦分离，使两部分可以独立变化
+    //一个关于多元化对象的例子
+    //
+    //通过桥接模式的实现，使实现层和逻辑层分开处理，避免了需求改变造成对象内部的修改，体现了
+    //面向对象对拓展的开放以及对修改的关闭原则
+    //但是，由于相较于不使用桥接模式来说，使用会增加一些多余的函数，可能会造成多余的开销
+    //
+    //多维变量类
+    //这些都是实现层
+    //运动单元
+    function Speed(x,y){
+      this.x = x;
+      this.y = y;
+    }
+    Speed.prototype.run = function (){
+      console.log('跑起来');
+    }
+    //着色单元
+    function Color(cl){
+      this.color = cl;
+    }
+    Color.prototype.draw = function (){
+      console.log('绘制色彩')
+    }
+    //变形单元
+    function Shape(sp){
+      this.shape = sp;
+    }
+    Shape.prototype.change = function (){
+      console.log('改变颜色');
+    }
+    //说话单元
+    function Speek(wd){
+      this.word = wd;
+    }
+    Speek.prototype.say = function (){
+      console.log('书写字体');
+    }
+    //下面的都是抽象层
+//    创建一个球类，他可以运动，可以着色
+    function Ball(x,y,cl){
+      this.speed = new Speed(x,y);
+      this.color = new Color(cl);
+    }
+    Ball.prototype.init = function (){
+      this.speed.run()
+      this.color.draw()
+    }
+    //我们想创建一个人物类，他可以运动和说话
+    function Person(x,y,f){
+      this.speed = new Speed(x,y);
+      this.speek = new Speek(f);
+    }
+    Person.prototype.init = function (){
+      this.speed.run()
+      this.speek.say()
+    }
+    let p = new Person(10,12,16)
+    p.init()
+
+</script>
+</body>
+</html>

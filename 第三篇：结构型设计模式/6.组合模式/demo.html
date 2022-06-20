@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+    //虽然程序跑不了，但是还是学习了很多-->
+    //组合模式就是一层又一层的嵌套
+    //在原生JS中，DOM树的创建是可以依赖于类与类之间的关系的
+    //如在本例子中的各种子类，他们之间有add函数，该函数就是
+    //构建DOM树，其子类的add是可以嵌套使用的，所以可以想HTML一样
+    //去构建虚拟DOM树。
+    //每个子类都有相同的属性和方法，但是属性相同但方法不相同，
+    //所以需要一个抽象父类,来为子类提供共享的属性和规定死的方法
+
+    let News = function (){
+    //  子组件容器
+      this.children = [];
+    //  当前组件元素
+      this.element = null;
+    }
+    News.prototype = {
+      init : function () {
+        throw new Error('请重写你的方法')
+      },
+      add : function () {
+        throw new Error('请重写你的方法')
+      },
+      getElement : function () {
+        throw new Error('请重写你的方法')
+      },
+    }
+    //定义寄生组合式继承
+    function inheritObject(o){
+      //声明一个过渡函数对象
+      function F(){}
+      //过渡对象的原型继承父对象
+      F.prototype = o;
+      //返回过渡对象的一个实例，该对象的原型继承了父对象
+      return new F();
+    }
+    function inheritPrototype(subClass,superClass){
+      //  复制一份父类的原型副本保存在变量中
+      let p = inheritObject(superClass.prototype);
+      //  因为在一开始用寄生式继承时，用的是父类的构造函数，
+      //  如果不修改子类的构造函数的话，就只能修改父类的构造函数
+      //  修正因为重写子类原型导致的constructor属性被修改
+      p.constructor = subClass;
+      //  设置子类的原型
+      subClass.prototype = p;
+    }
+    //
+    //  下面都是继承自News
+    //  区别就想HTML的嵌套结构一样，是一层套一层的关系，相互之间没有继承的关系
+    // 容器类构造函数
+    let Container = function (id,parent){
+    //  构造函数继承父类
+      News.call(this);
+    //  模块id
+      this.id = id;
+    //  模块的父容器
+      this.parent = parent;
+    //  构建方法
+      this.init()
+    }
+    //寄生式继承父类原型方法
+    inheritPrototype(Container,News)
+
+    //重写方法
+    //构建方法
+    Container.prototype.init = function (){
+      this.element = document.createElement('ul');
+      this.element.id = this.id;
+      this.element.className = 'new-container';
+    }
+    //添加子元素方法
+    Container.prototype.add = function (child){
+      //在子元素容器中插入子元素
+      this.children.push(child);
+      //  插入当前组件元素树中
+      this.element.appendChild(child.getElement());
+      return this;
+    }
+    Container.prototype.getElement = function (){
+      return this.element;
+    }
+    //显示方法
+    Container.prototype.show = function (){
+      this.parent.appendChild(this.element);
+    }
+    //同样下一层的行成员集合类以及后面的新闻组合体类实现的方式与之类似
+    //子类成员：Item
+    let Item = function (classname){
+      News.call(this);
+      this.classname = classname || '';
+      this.init();
+    }
+    inheritPrototype(Item,News);
+    Item.prototype.init = function (){
+      this.element = document.createElement('il');
+      this.element.className = this.classname;
+    }
+    //添加子元素方法
+    Item.prototype.add = function (child){
+      //在子元素容器中插入子元素
+      this.children.push(child);
+      //  插入当前组件元素树中
+      this.element.appendChild(child.getElement());
+      return this;
+    }
+    Item.prototype.getElement = function (){
+      return this.element;
+    }
+    //子类成员：NewGroup
+    let NewGroup = function (classname){
+      News.call(this);
+      this.classname = classname || '';
+      this.init();
+    }
+    inheritPrototype(NewGroup,News);
+    NewGroup.prototype.init = function (){
+      this.element = document.createElement('div');
+      this.element.className = this.classname;
+    }
+    //添加子元素方法
+    NewGroup.prototype.add = function (child){
+      //在子元素容器中插入子元素
+      this.children.push(child);
+      //  插入当前组件元素树中
+      this.element.appendChild(child.getElement());
+      return this;
+    }
+    NewGroup.prototype.getElement = function (){
+      return this.element;
+    }
+
+    //子类成员：ImageNews
+    let ImageNews = function (url,href,classname){
+      News.call(this);
+      this.url = url || '';
+      this.href = href || '#';
+      this.classname = classname || '';
+      this.init();
+    }
+    inheritPrototype(ImageNews,News);
+    ImageNews.prototype.init = function (){
+      this.element = document.createElement('a');
+      let img = new Image();
+      img.src = this.url;
+      this.element.appendChild(img);
+      this.element.className = 'image-news' + this.classname;
+      this.element.href = this.href;
+    }
+    //添加子元素方法
+    ImageNews.prototype.add = function (){}
+    ImageNews.prototype.getElement = function (){
+      return this.element;
+    }
+
+    //子类成员：IconNews
+    let IconNews = function (text,href,type){
+      News.call(this);
+      this.text = text || '';
+      this.href = href || '#';
+      this.type = type || 'video';
+      this.init();
+    }
+    inheritPrototype(IconNews,News);
+    IconNews.prototype.init = function (){
+      this.element = document.createElement('a');
+      this.element.innerHTML = this.text;
+      this.element.href = this.href;
+      this.element.className = 'icon' + this.type;
+    }
+    //添加子元素方法
+    IconNews.prototype.add = function (){}
+    IconNews.prototype.getElement = function (){
+      return this.element;
+    }
+    //子类成员：EasyNews
+    let EasyNews = function (text,href){
+      News.call(this);
+      this.text = text || '';
+      this.href = href || '#';
+      this.init();
+    }
+    inheritPrototype(EasyNews,News);
+    EasyNews.prototype.init = function (){
+      this.element = document.createElement('a');
+      this.element.innerHTML = this.text;
+      this.element.href = this.href;
+      this.element.className = 'text';
+    }
+    //添加子元素方法
+    EasyNews.prototype.add = function (){}
+    EasyNews.prototype.getElement = function (){
+      return this.element;
+    }
+
+    //子类成员：TypeNews
+    let TypeNews = function (text,href,type,pos){
+      News.call(this);
+      this.text = text || '';
+      this.href = href || '#';
+      this.type = type || '';
+      this.pos = pos || 'left';
+      this.init();
+    }
+    inheritPrototype(TypeNews,News);
+    TypeNews.prototype.init = function (){
+      this.element = document.createElement('a');
+      if(this.pos === 'left'){
+        this.element.innerHTML = '[' + this.type + ']' + this.text;
+      }else{
+        this.element.innerHTML = this.test + '[' + this.type + ']' ;
+      }
+      this.element.href = this.href;
+      this.element.className = 'text';
+    }
+    //添加子元素方法
+    TypeNews.prototype.add = function (){}
+    TypeNews.prototype.getElement = function (){
+      return this.element;
+    }
+
+    //创建新闻
+    let new1 = new Container('news',document.body);
+    new1.add(
+      new Item('normal').add(
+        new IconNews('梅西不拿金球也伟大','#','video')
+      )
+    ).add(
+      new Item('normal').add(
+        new NewGroup('has-img').add(
+          new ImageNews('img/1.jpg','#','small')
+        ).add(
+          new EasyNews('从240斤胖子成功变型男','#')
+        ).add(
+          new EasyNews('五大雷人跑步机','#')
+        )
+      ).add(
+        new Item('normal').add(
+          new TypeNews('AK47不愿为费城打球','#','NBA','left')
+        )
+      ).add(
+        new Item('normal').add(
+          new TypeNews('火炮彪6分钟新高','#','CBA','left')
+        )
+      )
+    )
+</script>
+</body>
+</html>

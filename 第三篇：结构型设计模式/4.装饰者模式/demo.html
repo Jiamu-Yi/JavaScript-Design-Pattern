@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+<!--    装饰者模式-->
+
+//定义装饰者模式函数
+let decorator = function (input , fn ){
+//  获取事件源
+  var input = document.getElementById(input);
+//  如果事件源已经绑定事件
+  if(typeof input.onclick === 'function'){
+  //  缓存事件源原来的事件
+    let oldEvent = input.onclick;
+    //为事件源定义新的事件
+    input.onclick = function (){
+    //    事件源原来的事件
+      oldEvent()
+      //执行新添加的事件
+      fn()
+    }
+  }else{
+    //如果没有给事件源绑定事件的话就直接把填加回调函数
+    input.onclick = fn;
+  }
+}
+
+//实现函数
+decorator('tel_input',function (){
+  document.getElementById('tel').style.display = 'none'
+})
+</script>
+</body>
+</html>
