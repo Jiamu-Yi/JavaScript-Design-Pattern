@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+    //原型模式：用原型实例指向创建对象的类，使用于创建新的对象的类,
+    //让这些类共享原型对象的属性以及方法，
+    //值得注意的是，这些继承是基于一种对属性和方法的共享，而不是对属性和方法的复制
+
+//    图片轮播类
+    let LoopImages = function (imgArr,container){
+      this.imagesArray = imgArr;
+      this.container = container;
+      this.createImage = function (){}
+      this.changeImage = function (){}
+    }
+//  上下滑动切换类
+    let SlideLoopImg = function (imgArr,container){
+    //  构造函数继承图片轮播类
+    //  这里调用的LoopImages的构造函数
+      LoopImages.call(this,imgArr,container);
+      this.changeImage = function (){
+        console.log('SlideLoopImg')
+      }
+    }
+//  创建一个实例
+    let fadeImg = new SlideLoopImg([
+      '1',
+      '2',
+      '3'
+    ],'Slide')
+    fadeImg.changeImage()
+//    上述代码的缺点：在子类构建时，调用父类的构造函数，而在父类的构造函数中有方法，
+//    导致有可能出现父类构造函数中的功能非常复杂的问题，导致性能较差
+//    所以需要只在构造函数里放简单的功能，将复杂的功能放在父类的原型里
+
+
+//    对于上面出现的父类方法重用的问题，将可复用的，可共享的，耗时大的方法从基类中提出来然后放在原型中
+//    然后子类通过组合继承或者寄生组合式继承将方法和属性继承下来，对于子类那些需要重写的方法进行重写
+//    这样子类创建的对象既具有子类的属性和方法也共享了基类的原型方法
+    //    图片轮播类
+    let newLoopImages = function (imgArr,container){
+      this.imagesArray = imgArr;
+      this.container = container;
+    }
+    newLoopImages.prototype = {
+      createImage : function (){
+        console.log('newLoopImg')
+      },
+      changeImage : function (){
+        console.log('changeLoopImg')
+      }
+    }
+    //  上下滑动切换类
+    let newSlideLoopImg = function (imgArr,container){
+      //  构造函数继承图片轮播类
+      newLoopImages.call(this,imgArr,container);
+    }
+    newSlideLoopImg.prototype = new newLoopImages()
+    //  创建一个实例
+    let newfadeImg = new newSlideLoopImg([
+      '1',
+      '2',
+      '3'
+    ],'Slide')
+    newfadeImg.changeImage()
+//
+//
+//    值得注意的是 ：因为子类是继承父类的原型，所以无论是子类或是父类的实例对象，
+//    只要对原型进行修改，都会适用于所有子类和父类的实例对象
+//
+
+
+
+
+</script>
+</body>
+</html>

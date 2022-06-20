@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+    /*多对象的原型继承*/
+    function prototypeExtend(){
+      let F = function (){};
+      let args = arguments;
+      let i = 0;
+      let len = args.length;
+      for(;i<len;i++){
+        for(let j in args[i]){
+          F.prototype[j] = args[i][j]
+        }
+      }
+      return new F()
+    }
+
+//    实现
+    let penguin = prototypeExtend({
+      speed:20,
+        swim: function (){
+        console.log('游泳')
+      }
+    },{
+      run: function (){
+        console.log('跑步')
+      }
+    },{
+      jump: function (){
+        console.log('跳跃')
+      }
+    })
+    console.log(penguin)
+    penguin.swim()
+    penguin.run()
+    penguin.jump()
+</script>
+</body>
+</html>

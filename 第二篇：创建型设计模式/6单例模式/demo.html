@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+    //单例模式：又称为单体模式，是只允许实例化一次的对象类，有时我们也用一个对象来规划一个命名空间，井井有条的管理对象上的属性与方法
+    //用于命名空间的管理，防止出现命名重复的问题
+    let YJM = {
+      g : function (id){
+        return document.getElementById(id);
+      },
+      css : function (id,key,value){
+        this.g(id).style[key] = value;
+      }
+    }
+    //用于管理代码中的各个模块,这样代码非常简介
+    // baidu.dom.addClass
+    // baidu.dom.append
+    // baidu.event.stopPropagation
+
+
+//    单例模式下的应用：静态变量，使用闭包实现
+    let Conf = (function (){
+      let conf = {
+        Max_num : 100,
+        Min_num : 1
+      }
+      return {
+        get : function (name){
+          return conf[name] ? conf[name] : null
+        }
+      }
+    })();
+
+    let count = Conf.get('Min_num')
+    console.log(count)
+
+//    惰性单例模式
+    let LazySingle = (function (){
+      let _instance = null;
+      //单例
+      function Single () {
+      //  这里定义私有属性和方法
+        return {
+          publicMethods:function (){},
+          publicProperty:'1.0'
+        }
+      }
+
+      console.log('create')
+      return function (){
+      //  如果为创建单例将创建单例
+      //  这里会out两次，因为在下面会调用一次就会运行一次这个函数
+      //  但是只有第一次创建才会实例化，才会调用create
+        console.log('out')
+        if(!_instance){
+          _instance = Single();
+        }
+        return _instance
+      }
+    })()
+    console.log(
+      LazySingle().publicProperty
+    )
+    console.log(
+      LazySingle().publicProperty
+    )
+
+</script>
+</body>
+</html>
