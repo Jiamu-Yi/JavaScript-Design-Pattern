@@ -10,7 +10,7 @@
 //      这里相当于是把类的定义和类的调用分离了，在定义中，可以对多个类进行定义。而在调用中，
 //      由于调用单独剥离了出来，导致可以对整个的工厂进行安全检验，防止使用者出现误用new的情况，
 
-//    安全模式
+//    安全模式下的构造函数
     let  Factory = function (type,content) {
       if(this instanceof Factory){
         return new this[type](content);

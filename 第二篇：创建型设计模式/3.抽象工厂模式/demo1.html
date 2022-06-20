@@ -13,7 +13,6 @@ let VehicleFactory = function (subType,superType) {
   if (typeof VehicleFactory[superType] === 'function') {
     //缓存类
     function F () {}
-
     //继承父类属性和方法
     F.prototype = new VehicleFactory[superType]();
     //将子类constructor 指向子类
