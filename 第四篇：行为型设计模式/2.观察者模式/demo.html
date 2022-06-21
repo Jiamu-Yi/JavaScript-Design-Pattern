@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+/*
+*
+* 观察者模式：又称作发布——订阅者模式，或消息机制，
+* 定义了一种依赖关系，解决了主体对象与观察者之间功能的耦合
+*
+* 一般来说，一个观察者对象会有一个消息容器，三个方法：分别是订阅消息方法，取消订阅方法，发送订阅的方法
+*
+*
+* 在Vue中，emit和provide都使用了类似的模式，用一个key当做两个组件或闭包通信的“地址”，
+* 数据接受者发布消息，数据发送者订阅消息，在数据发送者订阅消息后，向接受者传送数据时，
+* 会调用发布消息在注册/发布时输入的回调函数，注意，这里的回调函数还是在数据接受者的作用域中的
+* 这样就很巧妙的通过一个外部的闭包作用域作为独立闭包/组件之间交流的信息通信的桥梁
+*
+*
+*/
+//将观察者放在闭包里，当页面加载就立即执行
+let Observer = (function (){
+  let _messages = {};
+  return {
+  //  注册信息接口
+    regist : function (type,fn){
+      //如果消息不存在，就创建一个新的消息类型
+      if(typeof _messages[type] === 'undefined'){
+        _messages[type] = [fn];
+      }
+    //  如果消息存在
+      else {
+        // 将该动作方法推入该消息对应的动作执行序列中
+        _messages[type].push(fn);
+      }
+    },
+  //  发布信息接口
+    fire : function (type,args){
+    //  如果该类型没有注册，则直接返回
+      if(!_messages[type]){
+        return
+      }
+    //  定义消息信息
+      let event = {
+        type:type,
+        args:args || {}
+      }
+      for(let i = 0 ; i < _messages[type].length;i++){
+        _messages[type][i].call(this,event)
+      }
+    },
+  //  移除信息接口
+    remove : function (type,fn){
+    //    如果消息存在
+      if(_messages[type] instanceof Array){
+      //  从最后一个元素遍历】
+        for(let i = _messages[type].length - 1 ;i>=0;i--){
+          //判断一下函数是否相同，
+          _messages[type][i] === fn && _messages[type].splice(i,1);
+        }
+      }
+    }
+  }
+})()
+
+
+//简单测试一下
+//订阅消息
+Observer.regist('test',function (e){
+  console.log(e.type,e.args)
+})
+//发布
+Observer.fire('test','测试一下')
+//取消订阅
+Observer.remove('test',function (e){
+  console.log(e.type,e.args)
+})
+//这里再发布信息就无法触发了
+Observer.fire('test','测试一下')
+
+//类与对象之间的解耦
+
+//学生类
+let Student = function (result){
+  let that = this;
+  that.result = result;
+  that.say = function () {
+    console.log(that.result)
+  }
+}
+Student.prototype.answer = function (question) {
+  Observer.regist(question,this.say)
+}
+
+Student.prototype.sleep = function (question) {
+  console.log(this.result+ ' '+ question +'注销')
+  Observer.remove(question,this.say)
+}
+
+//教师类
+let Teacher = function () {}
+//教师提问问题的方法
+Teacher.prototype.ask = function (question){
+  console.log('问题是'+ question)
+  Observer.fire(question)
+}
+
+let student1 = new Student('学生一回答问题');
+let student2 = new Student('学生二回答问题');
+let student3 = new Student('学生三回答问题');
+//每个同学订阅两个
+student1.answer('什么是设计模式');
+student1.answer('简述观察者模式');
+student2.answer('什么是设计模式');
+student2.answer('简述观察者模式');
+student3.answer('什么是设计模式');
+student3.answer('简述观察者模式');
+//第三个取消订阅
+student3.sleep('简述观察者模式');
+
+let teacher = new Teacher();
+teacher.ask('什么是设计模式');
+teacher.ask('简述观察者模式');
+
+
+</script>
+
+</body>
+</html>
