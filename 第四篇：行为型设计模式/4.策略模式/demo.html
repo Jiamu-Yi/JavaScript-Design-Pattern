@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<script>
+   /*
+    *
+    * 策略模式
+    *
+    * 将一组相关的算法封装在一起，这些算法处理的业务都是相同的，只是处理的过程或者处理的结果不一样
+    * 所以他们又是可以相互替换的，这样就解决了算法之间的耦合
+    * 但是缺点是用户必须了解每一种算法的实现过程，才能充分发挥该模式的优点
+    * 策略模式和状态模式的格式很像
+    * 都是建立一个对象放在闭包作用域中，给出一个接口修改，添加，删除对象
+    *
+    */
+
+//   价格策略对象
+   let PriceStrategy = function (){
+   //  内部算法对象
+     let stragtegy = {
+       //  100返30
+       return30 : function (price){
+         return +price + parseInt( price / 100) * 30;
+       },
+       //  100返50
+       return50 : function (price){
+         return +price + parseInt( price / 100) * 50;
+       },
+       //  9折
+       percent90 : function (price){
+         return price + 100 * 90 / 10000;
+       },
+       //  八折
+       percent80 : function (price){
+         return price + 100 * 80 / 10000;
+       },
+       //  五折
+       percent50 : function (price){
+         return price + 100 * 50 / 10000;
+       },
+     }
+   //  策略算法调用接口
+     return function (algorithm,price) {
+       // 如果算法存在，则调用算法，否则返回
+       return stragtegy[algorithm] && stragtegy[algorithm](price)
+     }
+   }()
+
+   let price = PriceStrategy('return50','314.67')
+   console.log(price)
+
+</script>
+</body>
+</html>
