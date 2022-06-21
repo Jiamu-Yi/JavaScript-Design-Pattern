@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+    // 有时候一个对象的内部状态发生改变时，会导致其行为也发生改变，这看起来改变了对象
+//    有时候会出现对象的拥有多种状态，每种状态会随着外部参数的改变而改变，如果使用if/Switch
+//    对导致代码变的非常糟糕
+//
+//    以超级玛丽为例：超级玛丽拥有这多种动作，包括跳跃，开枪，蹲下，奔跑等，
+//    如果对他的状态进行单个判断，必然会导致代码非常糟糕，所以要使用状态管理
+//
+//    创建超级玛丽类
+    let MarryState = function (){
+      //玛丽当前的状态
+      let _currentState = {}
+      //动作与状态方式映射
+      let states = {
+        jump : function (){
+          console.log('jump')
+        },
+        move : function (){
+          console.log('move')
+        },
+        shoot : function (){
+          console.log('shoot')
+        },
+        squat : function (){
+          console.log('squat')
+        }
+      };
+    //  动作控制类
+      let Action = {
+      //  改变状态方法
+        changeState : function (){
+        //  组合动作通过传递多个参数传递
+          let arg = arguments;
+        // 重置内部的状态
+          _currentState = {}
+          if(arg.length){
+            for(let i = 0 ; i<arg.length;i++){
+              _currentState[arg[i]] = true
+            }
+          }
+          return this;
+        },
+      //  执行动作
+        goes : function (){
+          console.log('执行一次动作');
+          for(let i in _currentState){
+            states[i] && states[i]()
+          }
+          return this
+        }
+      }
+      return {
+        //外观模式
+        change:Action.changeState,
+        goes:Action.goes
+      }
+    }
+
+
+//    运行
+    let marry = new MarryState();
+    marry
+      .change('jump','shoot')
+      .goes()
+      .change('squat','move')
+      .goes()
+</script>
+</body>
+</html>
