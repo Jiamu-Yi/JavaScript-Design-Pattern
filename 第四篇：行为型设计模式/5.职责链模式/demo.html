@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+    /*
+     * 职责链模式：解决请求的发送者和请求的接受者之间的耦合，
+     * 通过职责链上的多个对象对分解请求流程，
+     * 实现请求在多个对象之间的传递
+     * 直到最后一个对象完成请求
+     */
+
+    /***
+     * 异步请求对象
+     * 参数 data  请求数据
+     * 参数 dealType 响应数据处理对象
+     * 参数 dom   事件源
+     ***/
+
+    let sendData = function (data,dealType,dom){
+    //  XHR 对象
+      let xhr = new XMLHttpRequest();
+      let url = 'xxxxxxxx';
+    //  请求返回事件
+      xhr.onload = function (event){
+      //  请求成功
+        if((xhr.status >= 200 && xhr.status < 300 ) || xhr.status === 304){
+          dealData(xhr.responseText,dealType,dom);
+        }else {
+        //  请求失败
+        }
+      //  拼接请求字符串
+        for(let i in data ){
+          url += '&' + i + '=' + data[i];
+        }
+      //  发送异步请求
+        xhr.open('get',url,true);
+        xhr.send(null)
+      }
+    }
+
+    /***
+     * 处理响应数据
+     * 参数 data  请求数据
+     * 参数 dealType 响应数据处理对象
+     * 参数 dom   事件源
+     ***/
+    let dealData = function (data,dealType,dom) {
+    //  对象toString 方法的简化应用
+      let dataTpye = Object.prototype.toString.call(data);
+    //  判断响应数据处理对象
+      switch (dealType){
+      //  输入框提示功能
+        case 'sug':
+      //      如果数据是数组
+          if(dataTpye === '[object Array]'){
+          //  创建提示框组件
+            return createSug(data,dom)
+          }
+      //   将响应的对象数据转化为数组
+            if(dataTpye === '[object Object]'){
+              let newData = [];
+              for(var i in data){
+                newData.push(data[i]);
+              }
+              return createSug(newData,dom)
+            }
+            break;
+        case 'validate':
+      //    创建校验组件
+          return createValidataResult(data,dom);
+          break;
+      }
+    }
+
+    /***
+     * 创建提示框组件
+     * 参数 data  请求数据
+     * 参数 dom   事件源
+     ***/
+    let createSug = function (data,dom){
+        let html = '';
+    //    拼接每一条提示语句
+      for(let i = 0;i<data.length;i++){
+        html += '<li>' + data[i] + '</li>>'
+      }
+    //  显示提示框
+      dom.parentNode.getElementsByTagName('ul')[0].innerHTML = html ;
+    }
+
+    /***
+     * 创建提示框组件
+     * 参数 data  请求数据
+     * 参数 dom   事件源
+     ***/
+    let createValidataResult = function (data,dom){
+      dom.parentNode.getElementsByTagName('span')[0].innerHTML = data ;
+    }
+
+
+//    对象实例化
+    let input = document.getElementsByTagName('input');
+    input[0].onchange = function (e){
+      sendData({value:input[0].value},'validate',input[0])
+    },
+    input[1].onchange = function (e){
+      sendData({value:input[1].value},'sug',input[1])
+    }
+
+
+//    上面的代码一共分了三部
+//    第一步：请求数据
+//    第二步:处理数据
+//    第三部:根据数据建立组件模块
+//    调用时，只需要调用第一步的函数即可，每一步的函数都只完成各自的任务，其他任务一律不管
+</script>
+</body>
+</html>
