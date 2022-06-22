@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+  /***
+   * 节流模式：对重复的业务逻辑进行节流控制，执行最后一次操作并取消其他操作，以提高性能
+   ***/
+    //单继承：其实就是把对象的属性一个一个全部复制给新对象
+  let extend = function (target,source){
+      //  遍历对象中属性
+      for(let property in source){
+        //  将源对象中的属性复制到目标对象中
+        target[property] = source[property];
+      }
+      return target
+    }
+  /***
+   * 节流器
+   * 参数 boolean 控制是否清楚计数器
+   * 参数 函数  需要节流的函数
+   *
+   * 节流器做了两件事情
+   * 1、清除将要执行的函数，如果传入的第一个参数是TRUE，则表示要清除将要执行的函数
+   * 同时会判断第二个参数（执行函数）有没有计时器句柄，有就清除
+   * 2、延迟执行函数，要传入两个参数，执行函数，相关参数，首相要对执行函数绑定一个计时器句柄，
+   * 保存该执行函数的计时器，第二个参数包含：执行作用域，执行函数的参数，执行函数延迟执行的时间
+   ***/
+  let throttle = function (){
+    let isClear = arguments[0];
+    let fn = undefined;
+    if(typeof isClear === 'boolean'){
+      //第二个参数则为函数
+      fn = arguments[1];
+      //函数的计时器句柄存在，则清除该计时器
+      fn._throttleID && clearTimeout(fn._throttleID);
+    //  通过计时器眼熟函数的执行
+    }else{
+      fn = arguments[0];
+      params = arguments[1];
+    //  为执行时的参数适配默认值
+      let p = extend({
+        context:null,
+        args:[],
+        time:300,
+      },params)
+    //清除执行计数器句柄
+      arguments.callee(true,fn);
+    //  为函数绑定计时器句柄，延迟执行函数
+      fn._throttleID = setTimeout(function (){
+      //  执行函数
+        fn.apply(p.context,p.args)
+      },p.time)
+    }
+  }
+
+</script>
+</body>
+</html>
