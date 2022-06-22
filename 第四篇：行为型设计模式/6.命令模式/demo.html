@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+  /***
+   * 命令模式：将请求与实现解耦并封装成独立对象，从而使不同的请求对客户端的实现参数化
+   *
+   * 命令模式就是将执行的命令封装，解决命令的发起者和命令的执行者之间的耦合，每一个命令其实是一套操作
+   * 命令的使用者不需要了解命令的执行者的命令接口是如何实现的
+   * 命令是如何实现的，命令是如何执行的，所有命令都被存在命令对象里
+   *
+   * 其实命令模式就是封装操作
+   *
+   *
+   ***/
+
+  //模块实现模块
+  let viewCommand = (function () {
+      let tpl =
+          {
+            // 展示图片结构模板
+            product: [
+              '<div>',
+              '<img sre="(#src#}"/>',
+              '<p>{#text#}</p>',
+              '</div>'
+            ].join(''),
+            //展示标题结构模板
+            title: [
+              '<div class="title">',
+              '<div class="main">',
+              '<h2>(#title#}</h2>',
+              '<p>(#tips#}</p>',
+              '</div>'
+            ].join('')
+          },
+    //格式化字符串缓存字符串
+      html = '';
+      function formateString(str,obj){
+        return str.replace(/\{#(\W+)#\}/g,function (match,key){
+          return obj[key];
+        })
+      }
+      let Action = {
+        create : function(data,view){
+          if (data.length) {
+            for(let i = 0; i < data.length; i++){
+              html += formateString (tpl[view], data[i]);
+            }
+          }else{
+            html += formateString(tpq[view],data)
+          }
+        },
+        display :function (container,data,view){
+            if(data){
+              this.create(data,view);
+            }
+            document.getElementById(container).innerHTML = html;
+            html = '';
+        }
+      }
+    //命令接口
+    return function excute(){}
+    })()
+
+  let productData = [
+    {
+      src:'command/02.jpg',
+      text:'绽放的桃花'
+    },
+    {
+      src:'command/03.jpg',
+      text:'阳光下的温馨'
+    },
+    {
+      src:'command/04.jpg',
+      text:'镜头前的绿色'
+    },
+  ]
+  let titleData = {
+    title:'夏日里的一片温馨',
+    tips : '暖暖的温情带给人们家的感受'
+  }
+
+    viewCommand({
+      command : 'display',
+      params : ['title',titleData,'title' +
+      '']
+    })
+
+</script>
+</body>
+</html>

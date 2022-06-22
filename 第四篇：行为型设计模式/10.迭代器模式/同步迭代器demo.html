@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+  /***
+   * 同步迭代器
+   * 对象通常会有很深的迭代结构
+   ***/
+  let A = {
+    common: {},
+    client:{
+      user:{
+        username:'yjm',
+        uid:'123',
+      }
+    },
+    server:{}
+  }
+
+//  同步变量迭代器取值器
+  Getter = function (obj,key){
+  //  如果不存在A则返回未定义
+    if(!obj){
+      return undefined
+    }
+    //获取同步变量A对象
+    let result = obj;
+    //解析属性层次序列
+    key = key.split('.')
+    //迭代同步变量A对象属性
+    for(let i = 0 ;i<key.length;i++){
+    //   如果第i层属性存在对应的值则迭代该属性值
+      if(result[key[i]] !== undefined){
+        result = result[key[i]];
+      //  如果不存在则返回未定义
+      }else{
+        return undefined
+      }
+    }
+    return result
+  }
+
+  console.log(Getter(A,'client.user.username'))
+  console.log(Getter(A,'client.user.undefined'))
+
+</script>
+</body>
+</html>

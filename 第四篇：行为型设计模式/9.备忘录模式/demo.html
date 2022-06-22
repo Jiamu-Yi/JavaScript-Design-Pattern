@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+  /***
+   *
+   * 备忘录模式：在不破坏对象的封装性的前提下，在对象之外捕获并保存该对象内部的状态以便
+   * 日后对象恢复到以前的某个状态
+   *
+   * 备忘录模式最主要的任务就对现有数据或状态做缓存，为将来的某个时刻使用或恢复提供备份
+   * 在JS中，备忘录模式常常用于对数据的缓存备份，浏览器端获取的数据往往是从陪你过服务器端请求获取到的
+   * 而请求往往非常耗时，对数据进行缓存是一种非常有效提升性能的方式
+   *
+   ***/
+//  下一页按钮点击事件
+  $('#next_page').click(function (){
+  //  获取新闻内容元素
+    let $news = $('#news_content'),
+      page = $news.data('page');
+  //  获取并展示新闻
+    getPageData(page,function () {
+      $news.data('page',page+1)
+    })
+  });
+  $('#pre_page').click(function (){
+  //  显示上一页
+  })
+
+  //  Page备忘录类
+  let Page = function (){
+  //  信息缓存对象
+    let cache = {};
+    /***
+     *主函数
+     * 参数 page 页码
+     * 参数 fn 成功回调函数
+     ***/
+    return function (page,fn) {
+    //  判断该页数据是否在缓存中
+      if(cache[page]){
+      //  恢复到该页状态，显示该页内容
+        showPage(page,cache[page]);
+      //  执行成功回调函数
+        fn&&fn();
+      }else{
+      //  若缓存cache中无该页数据
+      //  请求数据
+        showPage(page,res.data);
+      //  将该页数据放入缓存中
+        cache[page] = res.data;
+      //  执行成功回调函数
+        fn&fn()
+      }
+    }
+  }
+
+</script>
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<ul id="container">
+    <li>1</li>
+    <li>2</li>
+    <li>3</li>
+    <li>4</li>
+</ul>
+<script>
+  /***
+   * 迭代器模式：在不暴露对象结构的同时，可以顺序地访问聚合对象内部的元素
+   * 通过迭代器，我们可以顺序地访问一个聚合对象的每一个元素
+   ***/
+  //迭代器
+  let Iterator = function (item,container1) {
+    //  获取父容器，若container参数存在，并且可以获取到该元素则获取，否则获取document
+    let container = container1 && document.getElementById(container1) || document,
+      //获取元素
+      items = container.getElementsByTagName(item),
+      //索引值
+      index = 0,
+      //获取元素长度
+      length = items.length;
+    let splice = [].splice;
+    return {
+    //  获取第一个元素
+      first:function (){
+        index = 0;
+        return items[index];
+      },
+    //  获取最后一个元素
+      second:function (){
+        index = length - 1;
+        return items[index];
+      },
+    //  获取前一个元素
+      pre:function (){
+        if(--index > 0){
+          return items[index];
+        }else{
+          index = 0;
+          return null;
+        }
+      },
+    //  获取后一个元素
+      next:function (){
+        if(++index < length){
+          return items[index];
+        }else{
+          index = length - 1;
+          return null;
+        }
+      },
+    //  获取某一个元素
+      get:function (num){
+        index = num >= 0 ? num % length : num % length + length;
+        return items[index]
+      },
+    //  对每一个元素执行某一个方法
+      dealEach:function (fn){
+      //  第二个参数开始为回调函数中参数
+        let args = splice.call(arguments,1)
+      //  遍历元素
+        for(let i = 0;i < length ; i++){
+        //  对元素进行回调函数
+          fn.apply(items[i],args)
+        }
+      },
+    //  对某一个元素执行某一个方法
+      dealItem:function (num,fn){
+        fn.apply(this.get(num),splice.call(arguments,2))
+      },
+    //  排他方式处理某一个元素
+      exclusive:function (num,allFn,numFn){
+      //  对所有元素执行回调函数
+        this.dealEach(allFn);
+      //  如果num是数组类型的
+        if(Object.prototype.toString.call(num) === '[object Array]'){
+        //  遍历num数组
+          for(let i = 0 ; i < num.length ; i++){
+          //  分别处理每一个元素
+            this.dealItem(num[i],numFn);
+          }
+        }else {
+          this.dealItem(num,numFn)
+        }
+
+      }
+    }
+    }
+
+//测试一下
+  let demo = new Iterator('li','container')
+  console.log(demo.first())
+  console.log(demo.pre())
+  console.log(demo.next())
+  console.log(demo.get(2000))
+  demo.dealEach(function (){
+    this.innerHTML = 'hello';
+    this.style.background = 'red';
+  })
+  demo.exclusive([3],function (){
+    this.innerHTML = 'hello';
+    this.style.background = 'blue';
+  },function (){
+    this.innerHTML = 'hi';
+    this.style.background = 'white';
+    }
+  )
+
+  /***
+   * 数组迭代器：对于JS中的数组，有一些低版本的IE并没有实现，需要我们去定义一下
+   ***/
+  let eachArray = function (arr,fn){
+    for(let i = 0 ; i < arr.length;i++){
+      if( fn.call(arr[i],i,arr[i]) === false ){
+        break;
+      }
+    }
+  }
+
+  //测试
+  array = [1,2,3,4,5]
+  eachArray(array,function(i,data){
+    console.log(i,data)
+  })
+  /***
+   * 对象迭代器
+   ***/
+  let eachObject = function (obj,fn){
+    for(let i in obj){
+      if( fn.call(obj[i],i,obj[i]) === false ){
+        break;
+      }
+    }
+  }
+  //测试
+  OBJECT = {
+    1:'A',
+    2:'B',
+    3:'C',
+    4:'D',
+    5:'E'
+  }
+  eachObject(OBJECT,function(i,data){
+    console.log(i,data)
+  })
+</script>
+</body>
+</html>
