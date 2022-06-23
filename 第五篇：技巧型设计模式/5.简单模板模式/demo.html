@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+    /***
+     *  简单模板模式：通过格式化字符串拼接出视图避免创建视图时大量节点操作，优化内存开销
+     *
+     *  简单模板模式一般存在三部分：
+     *  字符串模板库，格式化方法，字符串拼接操作，然而前者在不同需求的视线中，
+     *  视同往往是不一致的，一次字符串模板常常是多变的，
+     *
+     ***/
+
+//    模板渲染方法
+    A.formatString = function (str , data){
+      return str.replace(/\{#(\w+)#\}/g,function (match,key) {
+        return typeof data[key] === undefined ? '' : data[key]});
+    }
+    //命名空间 单体对象
+    let A= A|| {};
+    // 主体展示区容器
+    A.root = document.getElementById('container');
+    //创建视图方法集合
+    A.strategy = {
+      //    文字列表展示
+      'listPart' : function  (data) {
+        let s = document.createElement('div'),
+          ul = '',
+          ldata = data.data.li,
+      //    模块模板
+          tpl = [
+            '<h2>{#h2#}</h2>',
+            '<p>{#p#}</p>',
+            '<ul>{#ul#}</ul>',
+          ].join('');
+      //  列表项模板
+        liTpl = [
+          '<li>',
+            '<strong>{#strong#}</strong>',
+            '<span>{#span#}</span>',
+          '</li>'
+        ].join('');
+      //  有id设置模块id
+        data.id && (s.id = data.id)
+      //  遍历列表数据
+        for(let i= 0 ; i < ldata.length ; i ++ ){
+        //  如果有列表项数据
+          if(ldata[i].em || ldata[i].span){
+          //  列表字符串追加一项列表项
+            ul += A.formatString(liTpl,ldata[i]);
+          }
+        }
+      //  装饰列表数据
+        data.data.ul = ul;
+      //  渲染模块并插入模块中
+        s.innerHTML = A.formatString(tpl,data.data);
+    //渲染模块
+        A.root.appendChild(s)
+      },
+      'codePart' : function () {},
+      'onlyTitle' : function () {},
+      'guide' : function () {},
+    }
+//    模板生成器
+    A.view = function (name){
+    //  模板库
+      let v = {
+      //  代码模板
+        code : '<pre><code>{#code#}</code></pre>',
+      //  图片模板
+        img : '<img src = "{#src#}" alt="{#alt#}" title="{#title#}"/>',
+      //  组合模板
+        theme : [
+          '<div>',
+          '<h1>{#title#}</h1>',
+          '{#content#}',
+          '</div>'
+        ].join('')
+      }
+    //  如果参数是一个数组，则返回多行模板
+      if(Object.prototype.toString.call(name) === "[object Array]"){
+      //  模板缓存器
+        let tpl = '';
+      //  遍历标识
+        for(let i = 0 ; i < name.length;i++){
+        //  模板缓存追加模板
+          tpl += arguments.callee(name[i])
+        }
+      //  返回最终模板
+        return tpl;
+      }else{
+      //  如果模板库中有该模板就返回该模板，否则返回简易模板
+        return v[name] ? v[name] : `<${name}>{#${name}#}</${name}>`
+      }
+    }
+
+
+    //命名空间 单体对象
+    let A= A|| {};
+    // 主体展示区容器
+    A.root = document.getElementById('container');
+    //创建视图方法集合
+    A.strategy = {
+      //    文字列表展示
+      'listPart' : function  (data) {
+        tpl = A.view(['h2','p','ul']);
+      //  列表项模板
+        liTpl = A.formatString(A.view('li'),{li:A.view(['strong','span'])})
+      },
+      'codePart' : function () {},
+      'onlyTitle' : function () {},
+      'guide' : function () {},
+    }
+    //
+</script>
+</body>
+</html>

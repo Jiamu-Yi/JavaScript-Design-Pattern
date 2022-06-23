@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+  /***
+   * 惰性模式：减少每次代码执行时的重复性的分支判断
+   * 通过对对象的重定义来屏蔽原对象中的分支判断
+   *
+   * 惰性模式是一种拖延模式，由于对象的创建或数据的计算会花费高昂的代价，因此页面会演出对这一类对象的创建
+   ***/
+
+//  单体模式定义命名空间
+  let A = {};
+//  添加绑定事件方式on
+  A.on = function (dom,fype,fn){
+    if(dom.addEventListener){
+      dom.addEventListener(tpye,fn,false);
+    }else if(dom.attachEvent){
+      dom.attachEvent('on' + type,fn);
+    }else{
+      dom['on' + type] = fn;
+    }
+  }
+
+//  上面的这个代码是根据不同的浏览器进行不同的适配
+//  但是一般情况下这种代码只执行一次就可以了，后续的执行都是无效的
+//  所以需要对它进行优化
+  /***
+   * 加载即执行
+   ***/
+  A.on = function (dom,fype,fn){
+    if(dom.addEventListener){
+      return function (dom,fype,fn){
+        dom.addEventListener(tpye,fn,false);
+      }
+    }else if(dom.attachEvent){
+      return function (dom,fype,fn){
+        dom.attachEvent('on' + type,fn);
+      }
+    }else{
+      return function (dom,fype,fn){
+        dom['on' + type] = fn;
+      }
+    }
+  }()
+
+  /***
+   * 惰性执行（重定义函数）
+   ***/
+  A.on = function (dom,fype,fn){
+    if(dom.addEventListener){
+      A.on = function (dom,fype,fn){
+        dom.addEventListener(tpye,fn,false);
+      }
+    }else if(dom.attachEvent){
+      A.on = function (dom,fype,fn){
+        dom.attachEvent('on' + type,fn);
+      }
+    }else{
+      A.on = function (dom,fype,fn){
+        dom['on' + type] = fn;
+      }
+    }
+  //  执行重定义on方法
+    A.on(dom,type,fn)
+  }
+</script>
+</body>
+</html>
